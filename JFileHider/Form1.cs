@@ -152,6 +152,7 @@ namespace JFileHider
             AlternateDataStreamInfo ai = listBox3.SelectedItem as AlternateDataStreamInfo;
             string fullname = fi.FullName + ":" + ai.Name;
             ADSHelper.ExecADSFile(fullname);
+            
         }
 
 

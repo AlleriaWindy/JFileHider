@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Trinet.Core.IO.Ntfs;
-using System.Diagnostics;
 
 namespace JFileHider
 {
@@ -18,6 +14,7 @@ namespace JFileHider
         }
         public static List<AlternateDataStreamInfo> ListAllADSFile(string path)
         {
+
             if (!CheckNTFS(path))
                 return null;
             List<AlternateDataStreamInfo> lst = new List<AlternateDataStreamInfo>();
@@ -26,8 +23,11 @@ namespace JFileHider
             {
                 FileInfo fi = new FileInfo(s);
                 var ais = fi.ListAlternateDataStreams();
+
+
                 if (!(ais == null || ais.Count <= 0))
                 {
+
                     foreach (var ai in ais)
                         lst.Add(ai);
                 }
@@ -49,7 +49,7 @@ namespace JFileHider
                 return lst;
         }
 
-        private static void RunCmd(string arg,bool wait = true,string start_pos = null)
+        private static void RunCmd(string arg, bool wait = true, string start_pos = null)
         {
             Process proc = new Process();
             proc.StartInfo.FileName = "cmd.exe";
@@ -59,15 +59,15 @@ namespace JFileHider
             proc.StartInfo.RedirectStandardOutput = true;
             proc.StartInfo.RedirectStandardError = true;
             proc.StartInfo.CreateNoWindow = true;
-            if(start_pos != null)
+            if (start_pos != null)
                 proc.StartInfo.WorkingDirectory = start_pos;
 
-            proc.Start();
-            if(wait)
+            proc.Start();//test
+            if (wait)
                 proc.WaitForExit();
         }
 
-        public static bool CreateADSFile(string fname,string adsname,string hidfile)
+        public static bool CreateADSFile(string fname, string adsname, string hidfile)
         {
             string arg = string.Format("type \"{0}\" > \"{1}:{2}\"", hidfile, fname, adsname);
 
@@ -76,14 +76,19 @@ namespace JFileHider
             return true;
         }
 
-        public static void ExecADSFile(string fullpath,string arg = null)
+        public static void ExecADSFile(string fullpath, string arg = null)
         {
             string tmpfile = System.Windows.Forms.Application.ExecutablePath;
             tmpfile = Path.GetDirectoryName(tmpfile) + "/temp.ttt";
             if (File.Exists(tmpfile))
                 File.Delete(tmpfile);
             RunCmd(string.Format("mklink \"{0}\" \"{1}\"", tmpfile, fullpath));
-            RunCmd(tmpfile, false,Path.GetDirectoryName(fullpath));
+
+            //RunCmd(tmpfile, false,Path.GetDirectoryName(fullpath));
+
+            FileManager.ShellAPIHelper sh = new FileManager.ShellAPIHelper(@"D:\VisualStudioProjects\JFileHider\JFileHider\bin\Debug\temp.ttt");
+            sh.ShowOpenWithDialog();
+            //Process.Start(@"D:\VisualStudioProjects\JFileHider\JFileHider\bin\Debug\temp.ttt");
         }
     }
 }
